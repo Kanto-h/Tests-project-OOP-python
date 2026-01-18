@@ -1,25 +1,58 @@
-from questions import Question
-from tests import TestManager
+from admin import Admin, Student
+from questions import TextQuestion, OneChoiceQuestion, MultiChoiceQuestion
 
-print("      ПОЧАТОК ПРОГРАМИ      \n")
 
-manager = TestManager("убубэ")
+def create_initial_data():
+    demo_list = []
 
-q1 = Question("Столиця Франції?", "Париж", difficulty=1)
-q2 = Question("Скільки біт у байті?", "8", difficulty=2)
+    q1 = TextQuestion("Столиця Франції?", "Париж", difficulty=1)
 
-manager.add_question(q1)
-manager.add_question(q2)
+    q2 = OneChoiceQuestion("Скільки біт у байті?", ["4", "8", "16"], 2, difficulty=1)
 
-manager.run_test()
+    q3 = MultiChoiceQuestion("Що з цього фрукти?", ["Яблуко", "Картопля", "Груша"], [1, 3], difficulty=2)
 
-print("\n      ДЕМОНСТРАЦІЯ ЗНИЩЕННЯ ОБ'ЄКТІВ (ЛР №2)      ")
+    demo_list.extend([q1, q2, q3])
+    return demo_list
 
-print("\n> Видаляємо Менеджера")
-del manager
+def main():
+    print("\n" + "=" * 40)
+    print("      СИСТЕМА ТЕСТУВАННЯ (ЛР №3)      ")
+    print("      Наслідування та Поліморфізм      ")
+    print("=" * 40)
 
-print("\n> Видаляємо Питання")
-del q1
-del q2
+    question_database = create_initial_data()
 
-print("\n      КІНЕЦЬ ПРОГРАМИ      ")
+    while True:
+        print("\n--- ГОЛОВНЕ МЕНЮ ---")
+        print("Оберіть вашу роль:")
+        print("1. Адміністратор (Створення питань)")
+        print("2. Студент (Проходження тесту)")
+        print("0. Вихід з програми")
+
+        role_choice = input("Ваш вибір > ")
+
+        match role_choice:
+            case "0":
+                print("\n[Система]: Робота завершена. До побачення!")
+                break
+
+            case "1":
+                login = input("Введіть логін адміна: ")
+                user = Admin(login)
+
+                user.show_menu(question_database)
+
+            case "2":
+                name = input("Введіть ваше ім'я: ")
+                user = Student(name)
+
+                user.show_menu(question_database)
+
+            case _:
+                print("Невірний вибір. Спробуйте ще раз.")
+
+    print("\n[Система]: Очищення ресурсів...")
+    del question_database
+
+if __name__ == "__main__":
+    main()
