@@ -17,7 +17,7 @@ class Question:
         print(f"[Тест]: Питання '{self.text[:15]}...' (Базове) створено.")
 
     def check_answer(self, user_response):
-        raise NotImplementedError("Метод check_answer має бути реалізований у підкласах")
+        raise NotImplementedError("check_answer має бути реалізований у підкласах")
 
     def get_text(self):
         return f"{self.text} (Бали: {10 * self.difficulty})"
@@ -133,3 +133,39 @@ class MatchingQuestion(Question):
         except Exception:
             pass
         return False
+
+    # FACTORY METHOD
+class QuestionFactory:
+    @staticmethod
+    def create_question(q_type, data):
+        text = data.get('text')
+        difficulty = int(data.get('difficulty', 1))
+
+        match q_type:
+            case 'text':
+                correct_answer = data.get('correct_answer')
+                return TextQuestion(text, correct_answer, difficulty)
+
+            case 'one_choice':
+                options = data.get('options')
+                correct_idx = int(data.get('correct_idx'))
+                return OneChoiceQuestion(text, options, correct_idx, difficulty)
+
+            case 'multi_choice':
+                options = data.get('options')
+                correct_indices = data.get('correct_indices')
+                return MultiChoiceQuestion(text, options, correct_indices, difficulty)
+
+            case 'order':
+                items = data.get('items')
+                correct_order = data.get('correct_order')
+                return OrderQuestion(text, items, correct_order, difficulty)
+
+            case 'matching':
+                left = data.get('left')
+                right = data.get('right')
+                pairs = data.get('pairs')
+                return MatchingQuestion(text, left, right, pairs, difficulty)
+
+            case _:
+                raise ValueError(f"Невідомий тип питання: {q_type}")
